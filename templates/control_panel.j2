@@ -1,0 +1,42 @@
+{% extends "base.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<h2>
+Welcome {{ username }}!
+</h2>
+<br>
+<div>
+	<h3>
+		Connectivity Test
+	</h3>
+	<div class="card">
+		{{ wtf.quick_form(testForm, method="GET", action="./do_test") }}
+	</div>
+	{% if command_output %}
+	<br><br>
+	<div style="white-space: pre-wrap;">
+{{ command_output }}
+	</div>
+	{% endif %}
+</div>
+<br><hr><br>
+<div>
+	<h3>
+		View Log Files
+	</h3>
+	<div class="card">
+		{{ wtf.quick_form(logHistory, method="GET", action="./get_file") }}
+	</div>
+	<br>
+	<div class="card">
+		{{ wtf.quick_form(logCalls, method="GET", action="./get_file") }}
+	</div>
+	{% if file_data %}
+		<br><br>
+		<div style="white-space: pre-wrap;">
+{{ file_data }}
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+SqualkSqualk Mobile
+{% endblock %}
+{% block content %}
+<body class="row">
+	<div class="container">
+		<div class="col-md-8 col-md-offset-2">
+			<h1>SqualkSqualk Mobile</h1>
+			<hr>
+			{% block app_content %}{% endblock %}
+		</div>
+	</div>
+</body>
+{% endblock %}

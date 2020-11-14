@@ -1,0 +1,9 @@
+{% extends "base.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+<div class="alert alert-info" role="alert">{{ message }}</div>
+	<div class="card">
+		{{ wtf.quick_form(form, method="POST", action="./login") }}
+	</div>
+</div>
+{% endblock %}
