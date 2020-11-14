@@ -132,6 +132,5 @@ def setup_db():
         exit(-1)
 
 if __name__ == "__main__":
-    #Check if sqlite3 DB exists, if not, create it
     setup_db()
     app.run(debug=True, host="0.0.0.0")
