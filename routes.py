@@ -43,7 +43,6 @@ def root():
 @app.route('/login', methods=["POST"])
 def login():
     print(f"[+] Executing login route")
-
     user = request.form.get("username")
     password = request.form.get("password")
     sql_stmt = f"SELECT * FROM Users WHERE username='{user}' and password='{password}'"
@@ -66,7 +65,7 @@ def login():
 @app.route('/control_panel')
 def control_panel():
     print(f"[+] Executing control_panel route")
-    if session['username'] == 'Admin':
+    if 'username' in session and session['username'] == 'Admin':
         return render_template("control_panel.j2",
                 username=session['username'],
                 testForm=TestForm(),
@@ -79,7 +78,7 @@ def control_panel():
 @app.route('/do_test')
 def do_test():
     print(f"[+] Executing do_test route")
-    if session['username'] == 'Admin':
+    if 'username' in session and session['username'] == 'Admin':
         command_string = f"ping -c 1 -t 100 {request.args.get('address')}"
         try:
             command_output = check_output([command_string], shell=True).decode().strip()
@@ -98,7 +97,7 @@ def do_test():
 @app.route('/get_file')
 def get_file():
     print(f"[+] Executing get_file route")
-    if session['username'] == 'Admin':
+    if 'username' in session and session['username'] == 'Admin':
         file_name = request.args.get('file')
         print(f"[+] Opening {file_name}")
         try:
