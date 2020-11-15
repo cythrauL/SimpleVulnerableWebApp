@@ -126,7 +126,7 @@ def setup_db():
             cursor.execute("DROP TABLE Users")
             db.commit()
         except Exception as e:
-            continue
+            print("[+] Looks like this is a first run :)")
         cursor.execute("CREATE TABLE Users (username text, password text)")
         cursor.execute(f"INSERT INTO Users VALUES ('Admin', '{password}')")
         db.commit()
