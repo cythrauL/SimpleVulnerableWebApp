@@ -122,7 +122,11 @@ def setup_db():
         password = get_random_string(32)
         db = sqlite3.connect(DB_NAME)
         cursor = db.cursor()
-        cursor.execute("DROP TABLE Users")
+        try:
+            cursor.execute("DROP TABLE Users")
+            db.commit()
+        except Exception as e:
+            continue
         cursor.execute("CREATE TABLE Users (username text, password text)")
         cursor.execute(f"INSERT INTO Users VALUES ('Admin', '{password}')")
         db.commit()
