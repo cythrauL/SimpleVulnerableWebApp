@@ -1,0 +1,20 @@
+{% extends "base.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<h2>
+Bash Tutorial
+</h2>
+<br>
+<div>
+	<div>
+		{{ wtf.quick_form(bashForm, method="POST", action="./run_bash_command") }}
+	</div>
+	{% if bash_output %}
+	<br><br>
+	<div style="white-space: pre-wrap;">
+{{ bash_output }}
+	</div>
+	{% endif %}
+</div>
+{% endblock %}

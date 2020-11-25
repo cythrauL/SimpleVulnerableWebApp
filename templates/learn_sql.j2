@@ -1,0 +1,20 @@
+{% extends "base.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<h2>
+SQL Tutorial
+</h2>
+<br>
+<div>
+	<div>
+		{{ wtf.quick_form(sqlForm, method="POST", action="./execute_sql") }}
+	</div>
+	{% if sql_output %}
+	<br><br>
+	<div style="white-space: pre-wrap;">
+{{ sql_output }}
+	</div>
+	{% endif %}
+</div>
+{% endblock %}

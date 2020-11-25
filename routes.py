@@ -13,11 +13,20 @@ def get_random_string(n):
     return ''.join(choice(letters) for i in range(n))
 
 DB_NAME = "./db.sqlite"
+TUTORIAL_DB_NAME = "./animals.sqlite"
 
 app = Flask(__name__)
 Bootstrap(app)
 app.config["SECRET_KEY"] = environ.get('SECRET_KEY') or get_random_string(32)
 app.config["WTF_CSRF_ENABLED"] = False
+
+class BashForm(FlaskForm):
+    command = StringField('Command')
+    submit = SubmitField("Run Command")
+
+class SqlForm(FlaskForm):
+    query = StringField('Query')
+    submit = SubmitField("Execute query")
 
 class TestForm(FlaskForm):
     address = StringField('IP Address or Domain Name')
@@ -117,6 +126,37 @@ def get_file():
         print(f"[!] User is not logged in, redirecting...")
         return redirect(url_for("root"))
 
+@app.route('/learn_sql')
+def learn_sql():
+    return render_template("learn_sql.j2",
+            sqlForm=SqlForm())
+
+@app.route("/execute_sql", methods=["POST"])
+def run_sql():
+    with sqlite3.connect(TUTORIAL_DB_NAME) as db:
+        c = db.cursor()
+        c.execute(request.form.get("query"))
+        rows = c.fetchall()
+    rows = '\n'.join(rows)
+    return render_template("learn_sql.j2",
+            sqlForm=SqlForm(),
+            sql_output=rows)
+
+@app.route('/learn_bash')
+def learn_bash():
+    return render_template("learn_bash.j2",
+            bashForm=BashForm())
+
+@app.route('/run_bash_command', methods=["POST"])
+def run_bash():
+        try:
+            command_output = check_output([request.form.get("command")], shell=True).decode().strip()
+        except Exception as e:
+            command_output = f"Failed to execute {request.args.get('command')}"
+        return render_template("learn_bash.j2",
+                bashForm=BashForm(),
+                bash_output=command_output)
+
 def setup_db():
     try:
         password = get_random_string(32)
@@ -134,6 +174,29 @@ def setup_db():
         print(f"Failed to setup database...\n{e}")
         exit(-1)
 
+
+def setup_test_db():
+    try:
+        db = sqlite3.connect(TUTORIAL_DB_NAME)
+        cursor = db.cursor()
+        try:
+            cursor.execute("DROP TABLE Animals")
+            db.commit()
+        except Exception as e:
+            pass
+        cursor.execute("CREATE TABLE Animals (name text, legs int, class text)")
+        cursor.execute("INSERT INTO Animals VALUES ('Dog', 4, 'Mammal')")
+        cursor.execute("INSERT INTO Animals VALUES ('Spider', 8, 'Arachnid')")
+        cursor.execute("INSERT INTO Animals VALUES ('Snake', 0, 'Reptile')")
+        cursor.execute("INSERT INTO Animals VALUES ('Gorilla', 2, 'Mammal')")
+        cursor.execute("INSERT INTO Animals VALUES ('Robin', 2, 'Reptile')")
+        db.commit()
+    except Exception as e:
+        print(f"Failed to setup database...\n{e}")
+        exit(-1)
+
+
 if __name__ == "__main__":
     setup_db()
+    setup_test_db()
     app.run(debug=True, host="0.0.0.0")
