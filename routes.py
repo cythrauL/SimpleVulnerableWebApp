@@ -134,10 +134,14 @@ def learn_sql():
 @app.route("/execute_sql", methods=["POST"])
 def run_sql():
     with sqlite3.connect(TUTORIAL_DB_NAME) as db:
-        c = db.cursor()
-        c.execute(request.form.get("query"))
-        rows = c.fetchall()
-    rows = '\n'.join(rows)
+        try:
+            c = db.cursor()
+            c.execute(request.form.get("query"))
+            rows = c.fetchall()
+            rows = '\n'.join([str(x) for x in rows])
+        except Exception as e:
+            rows = e
+
     return render_template("learn_sql.j2",
             sqlForm=SqlForm(),
             sql_output=rows)
@@ -152,7 +156,7 @@ def run_bash():
         try:
             command_output = check_output([request.form.get("command")], shell=True).decode().strip()
         except Exception as e:
-            command_output = f"Failed to execute {request.args.get('command')}"
+            command_output = f"Failed to execute {request.form.get('command')}"
         return render_template("learn_bash.j2",
                 bashForm=BashForm(),
                 bash_output=command_output)
