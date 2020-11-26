@@ -4,7 +4,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from flask_bootstrap import Bootstrap
 from sys import exit
 from os import environ
-from subprocess import check_output
+from subprocess import check_output, run
 from string import ascii_uppercase as letters
 from random import choice
 from tabulate import tabulate
@@ -36,7 +36,7 @@ class TestForm(FlaskForm):
 
 class LogHistory(FlaskForm):
     file = SubmitField('login_history.log')
-        
+
 class LogCalls(FlaskForm):
     file = SubmitField('call_history.log')
 
@@ -93,7 +93,7 @@ def do_test():
         command_string = f"ping -c 1 -t 100 {request.args.get('address')}"
         try:
             command_output = check_output([command_string], shell=True).decode().strip()
-        except Exception as e:
+        except Exception:
             command_output = f"Failed to execute {command_string}"
         return render_template("control_panel.j2",
                 username=session['username'],
@@ -115,7 +115,7 @@ def get_file():
             with open(file_name) as f:
                 data = f.read()
             print("[+] File read successeful!")
-        except Exception as e:
+        except Exception:
             print(f"[!] failed to open {file_name}")
             data = f"Couldn't open file {file_name}"
         return render_template("control_panel.j2",
@@ -168,7 +168,9 @@ def learn_bash():
 @app.route('/run_bash_command', methods=["POST"])
 def run_bash():
         try:
-            command_output = check_output([request.form.get("command")], shell=True).decode().strip()
+            completed_process = run([request.form.get("command")], shell=True, capture_output=True)
+            command_output = completed_process.stdout.decode()
+            command_output += completed_process.stderr.decode()
         except Exception as e:
             command_output = f"Failed to execute {request.form.get('command')}\n{e}"
         return redirect(url_for("learn_bash",
