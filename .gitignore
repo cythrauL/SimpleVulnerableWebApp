@@ -1,5 +1,6 @@
 #Don't inlude the db
 db.sqlite
+animals.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
