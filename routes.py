@@ -130,6 +130,11 @@ def get_file():
 
 @app.route('/learn_sql')
 def learn_sql():
+    if "sql_output" in session:
+        sql_output = session["sql_output"]
+        del session["sql_output"]
+    else:
+        sql_output = None
     with sqlite3.connect(TUTORIAL_DB_NAME) as db:
         try:
             c = db.cursor()
@@ -143,7 +148,7 @@ def learn_sql():
     return render_template("learn_sql.j2",
             sqlForm=SqlForm(),
             table=table,
-            sql_output=request.args.get('sql_output'))
+            sql_output=sql_output)
 
 @app.route("/execute_sql", methods=["POST"])
 def run_sql():
@@ -155,15 +160,19 @@ def run_sql():
             rows = '\n'.join([str(x) for x in rows])
         except Exception as e:
             rows = e
-
-    return redirect(url_for("learn_sql",
-            sql_output=rows))
+        session["sql_output"] = rows
+    return redirect(url_for("learn_sql"))
 
 @app.route('/learn_bash')
 def learn_bash():
+    if "bash_output" in session:
+        bash_output = session["bash_output"]
+        del session["bash_output"]
+    else:
+        bash_output = None
     return render_template("learn_bash.j2",
             bashForm=BashForm(),
-            bash_output=request.args.get('bash_output'))
+            bash_output=bash_output)
 
 @app.route('/run_bash_command', methods=["POST"])
 def run_bash():
@@ -173,8 +182,8 @@ def run_bash():
             command_output += completed_process.stderr.decode()
         except Exception as e:
             command_output = f"Failed to execute {request.form.get('command')}\n{e}"
-        return redirect(url_for("learn_bash",
-                bash_output=command_output))
+        session['bash_output'] = command_output
+        return redirect(url_for("learn_bash"))
 
 def setup_db():
     try:
