@@ -7,15 +7,20 @@ SQL Tutorial
 </h2>
 <br>
 <p>
-Table 'Animals' contains entries of the format [Name, Legs, Class]
+	<div style="white-space: pre-wrap; font-family: monospace">
+Animals Table:
+
+{{ table }}
+	</div>
 </p>
+<p>Example queries:</p>
 <ul>
 <li>SELECT * FROM Animals</li>
-<li>SELECT Name FROM Animals WHERE legs='2'</li>
-<li>SELECT * FROM Animals WHERE class='Reptile'--surprised?</li>
-<li>SELECT Name, Legs FROM Animals WHERE legs &gt 4</li>
-<li>SELECT Name, Legs FROM Animals WHERE legs &lt 4 AND class='Mammal'</li>
-<li>SELECT * FROM Animals WHERE '1'='1'</li>
+<li>SELECT Name FROM Animals WHERE legs=<b>'4'</b></li>
+<li>SELECT * FROM Animals WHERE class=<b>'Reptile'</b>--surprised?</li>
+<li>SELECT Name, Legs FROM Animals WHERE legs &gt <b>'4'</b></li>
+<li>SELECT Name, Legs FROM Animals WHERE legs &lt <b>'4'</b> AND class=<b>'Mammal'</b></li>
+<li>SELECT * FROM Animals WHERE '1'=<b>'1'</b></li>
 </ul>
 <br>
 <div>

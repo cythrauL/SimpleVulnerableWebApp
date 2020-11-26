@@ -7,7 +7,9 @@ from os import environ
 from subprocess import check_output
 from string import ascii_uppercase as letters
 from random import choice
+from tabulate import tabulate
 import sqlite3
+
 
 def get_random_string(n):
     return ''.join(choice(letters) for i in range(n))
@@ -128,8 +130,20 @@ def get_file():
 
 @app.route('/learn_sql')
 def learn_sql():
+    with sqlite3.connect(TUTORIAL_DB_NAME) as db:
+        try:
+            c = db.cursor()
+            c.execute("SELECT * FROM Animals")
+            rows = c.fetchall()
+            headers = [x[0] for x in c.description]
+            table = tabulate(rows, headers, tablefmt="psql")
+        except Exception as e:
+            print(f"[!] Someone broke the database...{e}")
+            table = f"[!]Table is broken:\n{e}"
     return render_template("learn_sql.j2",
-            sqlForm=SqlForm())
+            sqlForm=SqlForm(),
+            table=table,
+            sql_output=request.args.get('sql_output'))
 
 @app.route("/execute_sql", methods=["POST"])
 def run_sql():
@@ -142,24 +156,23 @@ def run_sql():
         except Exception as e:
             rows = e
 
-    return render_template("learn_sql.j2",
-            sqlForm=SqlForm(),
-            sql_output=rows)
+    return redirect(url_for("learn_sql",
+            sql_output=rows))
 
 @app.route('/learn_bash')
 def learn_bash():
     return render_template("learn_bash.j2",
-            bashForm=BashForm())
+            bashForm=BashForm(),
+            bash_output=request.args.get('bash_output'))
 
 @app.route('/run_bash_command', methods=["POST"])
 def run_bash():
         try:
             command_output = check_output([request.form.get("command")], shell=True).decode().strip()
         except Exception as e:
-            command_output = f"Failed to execute {request.form.get('command')}"
-        return render_template("learn_bash.j2",
-                bashForm=BashForm(),
-                bash_output=command_output)
+            command_output = f"Failed to execute {request.form.get('command')}\n{e}"
+        return redirect(url_for("learn_bash",
+                bash_output=command_output))
 
 def setup_db():
     try:
