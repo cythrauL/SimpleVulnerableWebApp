@@ -1,35 +1,41 @@
-{% extends "base.j2" %}
+{% extends 'bootstrap/base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
-{% block app_content %}
-<h2>
-SQL Tutorial
-</h2>
-<br>
-<p>
-	<div style="white-space: pre-wrap; font-family: monospace">
+{% block content %}
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-sm-10">
+			<h1>
+				SQL Tutorial
+			</h1>
+			<br>
+			<p>
+				<div style="white-space: pre-wrap; font-family: monospace">
 Animals Table:
 
 {{ table }}
-	</div>
-</p>
-<p>Example queries:</p>
-<ul>
-<li>SELECT * FROM Animals</li>
-<li>SELECT Name FROM Animals WHERE legs=<b>'4'</b></li>
-<li>SELECT * FROM Animals WHERE class=<b>'Reptile'</b>--surprised?</li>
-<li>SELECT * FROM Animals WHERE Name=<b>'Dog'</b> OR '1'=<b>'1'</b></li>
-</ul>
-<br>
-<div>
-	<div>
-		{{ wtf.quick_form(sqlForm, method="POST", action="./execute_sql") }}
-	</div>
-	{% if sql_output %}
-	<br><br>
-	<div style="white-space: pre-wrap;">
+				</div>
+			</p>
+			<p>Example queries:</p>
+			<ul>
+			<li>SELECT * FROM Animals</li>
+			<li>SELECT Name FROM Animals WHERE legs=<b>'4'</b></li>
+			<li>SELECT * FROM Animals WHERE class=<b>'Reptile'</b>--surprised?</li>
+			<li>SELECT * FROM Animals WHERE Name=<b>'Dog'</b> OR '1'=<b>'1'</b></li>
+			</ul>
+			<br>
+			<div>
+				<div>
+					{{ wtf.quick_form(sqlForm, method="POST", action="./execute_sql") }}
+				</div>
+				{% if sql_output %}
+				<br><br>
+				<div style="white-space: pre-wrap;">
 {{ sql_output }}
+				</div>
+				{% endif %}
+		</div>
 	</div>
-	{% endif %}
 </div>
+<div>
 {% endblock %}

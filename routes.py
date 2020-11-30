@@ -30,15 +30,18 @@ class SqlForm(FlaskForm):
     query = StringField('Query')
     submit = SubmitField("Execute query")
 
-class TestForm(FlaskForm):
-    address = StringField('IP Address or Domain Name')
-    submit = SubmitField('Perform Test')
+class AdminForm(FlaskForm):
+    comment = StringField('Administrative comment')
+    submit = SubmitField('Add to log')
 
 class LogHistory(FlaskForm):
     file = SubmitField('login_history.log')
 
 class LogCalls(FlaskForm):
     file = SubmitField('call_history.log')
+
+class LogAdmin(FlaskForm):
+    file = SubmitField('admin.log')
 
 class LoginForm(FlaskForm):
     username = StringField('Username')
@@ -79,27 +82,30 @@ def control_panel():
     if 'username' in session and session['username'] == 'Admin':
         return render_template("control_panel.j2",
                 username=session['username'],
-                testForm=TestForm(),
+                adminForm=AdminForm(),
                 logHistory=LogHistory(),
-                logCalls=LogCalls())
+                logCalls=LogCalls(),
+                logAdmin=LogAdmin())
     else:
         print(f"[!] User is not logged in, redirecting...")
         return redirect(url_for("root"))
 
-@app.route('/do_test')
-def do_test():
-    print(f"[+] Executing do_test route")
+@app.route('/add_comment', methods=["POST"])
+def add_comment():
+    print(f"[+] Executing add_comment route")
     if 'username' in session and session['username'] == 'Admin':
-        command_string = f"ping -c 1 -t 100 {request.args.get('address')}"
+        command_string = f"echo \"{request.form.get('comment')}\" >> admin.log"
         try:
-            command_output = check_output([command_string], shell=True).decode().strip()
+            check_output(command_string, shell=True).decode().strip()
+            command_output = "Wrote comment to file"
         except Exception:
             command_output = f"Failed to execute {command_string}"
         return render_template("control_panel.j2",
                 username=session['username'],
-                testForm=TestForm(),
+                adminForm=AdminForm(),
                 logHistory=LogHistory(),
                 logCalls=LogCalls(),
+                logAdmin=LogAdmin(),
                 command_output=command_output)
     else:
         print(f"[!] User is not logged in, redirecting...")
@@ -120,9 +126,10 @@ def get_file():
             data = f"Couldn't open file {file_name}"
         return render_template("control_panel.j2",
                 username=session['username'],
-                testForm=TestForm(),
+                adminForm=AdminForm(),
                 logHistory=LogHistory(),
                 logCalls=LogCalls(),
+                logAdmin=LogAdmin(),
                 file_data=data)
     else:
         print(f"[!] User is not logged in, redirecting...")
@@ -130,6 +137,7 @@ def get_file():
 
 @app.route('/learn_sql')
 def learn_sql():
+    print(f"[+] Executing learn_sql route")
     if "sql_output" in session:
         sql_output = session["sql_output"]
         del session["sql_output"]
@@ -165,6 +173,7 @@ def run_sql():
 
 @app.route('/learn_bash')
 def learn_bash():
+    print(f"[+] Executing learn_bash route")
     if "bash_output" in session:
         bash_output = session["bash_output"]
         del session["bash_output"]
@@ -184,6 +193,15 @@ def run_bash():
             command_output = f"Failed to execute {request.form.get('command')}\n{e}"
         session['bash_output'] = command_output
         return redirect(url_for("learn_bash"))
+
+def create_admin_log():
+    try:
+        with open('admin.log', 'w') as f:
+            f.write("Check our customer data for GDPR compliance\n")
+            f.close()
+    except Exception as e:
+        print(f"Failed to create admin.log... \n{e}")
+        exit(-1)
 
 def setup_db():
     try:
@@ -227,4 +245,5 @@ def setup_test_db():
 if __name__ == "__main__":
     setup_db()
     setup_test_db()
+    create_admin_log()
     app.run(debug=True, host="0.0.0.0")

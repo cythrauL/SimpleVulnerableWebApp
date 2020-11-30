@@ -1,28 +1,38 @@
-{% extends "base.j2" %}
+{% extends 'bootstrap/base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
-{% block app_content %}
-<h2>
-Bash Tutorial
-</h2>
-<br>
-<ul>
-<li><b>ls</b> - list files</li>
-<li><b>pwd</b> - tell you where you are</li>
-<li><b>cd</b> - change directory, examples include '../', '/home/user/', '~/'</li>
-<li><b>ping</b> google.co.uk - Perform a conectivity check with google</li>
-<li><b>cat</b> filename - print the contents of a file to the screen</li>
-<li><b>rm</b> filename - delete a file</li>
-</ul>
-<div>
-	<div>
-		{{ wtf.quick_form(bashForm, method="POST", action="./run_bash_command") }}
-	</div>
-	{% if bash_output %}
-	<br><br>
-	<div style="white-space: pre-wrap;">
+{% block content %}
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-sm-10">
+			<h1>
+			Bash Tutorial
+			</h1>
+			<br>
+			<br>
+			<ul>
+			<li><b>ls</b> - list files</li>
+			<li><b>pwd</b> - tell you where you are</li>
+			<li><b>cd</b> - change directory, examples include '../', '/home/user/', '~/'</li>
+			<li><b>ping</b> google.co.uk - Perform a conectivity check with google</li>
+			<li><b>cat</b> filename - print the contents of a file to the screen</li>
+			<li><b>rm</b> filename - delete a file</li>
+			</ul>
+			<br>
+			<br>
+			<div>
+			
+				<div>
+					{{ wtf.quick_form(bashForm, method="POST", action="./run_bash_command") }}
+				</div>
+				{% if bash_output %}
+				<br><br>
+				<div style="white-space: pre-wrap;">
 {{ bash_output }}
+				</div>
+				{% endif %}
+			</div>
+		</div>
 	</div>
-	{% endif %}
 </div>
 {% endblock %}

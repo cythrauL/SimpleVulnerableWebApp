@@ -8,10 +8,10 @@ Welcome {{ username }}!
 <br>
 <div>
 	<h3>
-		Connectivity Test
+		Add comment to log
 	</h3>
 	<div class="card">
-		{{ wtf.quick_form(testForm, method="GET", action="./do_test") }}
+		{{ wtf.quick_form(adminForm, method="POST", action="./add_comment") }}
 	</div>
 	{% if command_output %}
 	<br><br>
@@ -31,6 +31,10 @@ Welcome {{ username }}!
 	<br>
 	<div class="card">
 		{{ wtf.quick_form(logCalls, method="GET", action="./get_file") }}
+	</div>
+	<br>
+	<div class="card">
+		{{ wtf.quick_form(logAdmin, method="GET", action="./get_file") }}
 	</div>
 	{% if file_data %}
 		<br><br>
